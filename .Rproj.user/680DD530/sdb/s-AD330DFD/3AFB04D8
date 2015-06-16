@@ -1,0 +1,18 @@
+{
+    "contents" : "#' Função que cria a query de pesquisa\n#'\n#'@param q palavras chave pesquisadas\n#'@param t tipo da pesquisa (\"e\" pesquisa por titulo extao, \"ne\" pode fazer aproximações)\n#'\nimdb_criar_query <- function(q, t = \"e\"){\n  base_url <- \"http://www.imdb.com.br/find?q=\"\n  q <- str_replace_all(q, \" \", \"+\")\n  query <- paste0(base_url, q, \"&s=tt\")\n  if (t == \"e\"){\n    query <- paste0(query, \"&exact=true&ref_=fn_tt_ex\")\n  } else if (t == \"ne\"){\n  } else {\n    stop(\"Não é um tipo\")\n  }\n\n  return(query)\n}\n\n\n#' Função que retorna o resultado da pesquisa (formato html)\n#'\n#'@param q palavras chave pesquisadas\n#'@param t tipo da pesquisa (\"e\" pesquisa por titulo extao, \"ne\" pode fazer aproximações)\n#'\nimdb_aux_pesquisa <- function(q, t = \"e\"){\n  query <- imdb_criar_query(q, t)\n  pesquisa <- html(query)\n  return(pesquisa)\n}\n\n#' Retorna lista com resultado das palavras pesquisadas\n#'\n#'@param p pesquisa retornada pela função imdb_pesquisa\n#'\n#'\nimdb_parse_pesquisa <- function(p){\n\n  titulo <- p %>%\n    html_nodes(\".result_text\") %>%\n    html_text\n\n  tts <- p %>%\n    html_nodes(\".result_text\") %>%\n    html_node(\"a\") %>%\n    html_attr(\"href\")\n\n  return(\n    data.frame(\n      titulo = titulo,\n      tt = tts,\n      stringsAsFactors = F\n    )\n  )\n}\n\n#' Função que retorna o resultado da pesquisa (formato html)\n#'\n#'@param q palavras chave pesquisadas\n#'@param t tipo da pesquisa (\"e\" pesquisa por titulo extao, \"ne\" pode fazer aproximações)\n#'\n#'@export\nimdb_pesquisa <- function(q, t = \"e\"){\n  imdb_aux_pesquisa(q, t) %>% imdb_parse_pesquisa\n}\n\n\n\n#' Retorna as infos de um filme (usando o tt)\n#'\n#'@param tt codigo de um filme no imdb\n#'\nimdb_infos_tt <- function(tt){\n  base_url <- \"http://www.imdb.com.br\"\n  url <- paste0(base_url, tt) %>% html\n\n\n  titulo <- url %>%\n    html_node(\".itemprop\") %>%\n    html_text\n\n  duracao <- url %>%\n    html_node(\"time\") %>%\n    html_text %>%\n    str_trim\n\n  categorias <- url %>%\n    html_node(\".infobar\") %>%\n    html_nodes(\".itemprop\") %>%\n    html_text\n\n\n  # criar codigo para pegar\n  # ano, diretor, e atores principais\n\n  return(\n    data.frame(tt = tt,\n               titulo = titulo,\n               duracao = duracao,\n               categorias = list(categorias),\n               stringsAsFactors = F\n               )\n    )\n}\n\n",
+    "created" : 1434476130652.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "512997766",
+    "id" : "3AFB04D8",
+    "lastKnownWriteTime" : 1434480274,
+    "path" : "~/projetos/rimdb/R/rimdb.R",
+    "project_path" : "R/rimdb.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

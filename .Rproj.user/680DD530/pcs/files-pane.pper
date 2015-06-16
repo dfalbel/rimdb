@@ -1,0 +1,9 @@
+{
+    "path" : "~/projetos/rimdb",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
